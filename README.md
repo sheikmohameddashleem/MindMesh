@@ -2,14 +2,11 @@
 
 ![Intezy Logo](Intezy-1.png)
 
-<!-- Reduced image size with specified width -->
-<img src="logo.png" alt="Intezy Logo" width="200">
 
 <!-- Reduced image size with specified height -->
-<img src="logo.png" alt="Intezy Logo" height="100">
+<img src="![Intezy Logo](logo.png)" alt="Intezy Logo" height="100">
 
-<!-- Reduced image size with specified width and height -->
-<img src="Intezy-1.png" alt="Intezy Logo" width="200" height="100">
+
 
 
 Intezy is a collaborative web application designed to help users practice mock interviews using cutting-edge AI technology. It integrates the power of OpenAI's GPT-3.5 Turbo model for natural language processing, providing a seamless and interactive experience.
