@@ -3,8 +3,6 @@
 ![Intezy Logo](Intezy-1.png)
 
 
-<!-- Reduced image size with specified height -->
-<img src="Intezy-1.png" alt="Intezy Logo" height="100">
 
 
 
