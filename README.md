@@ -1,4 +1,4 @@
-# Intezy - Mock Interview Web Application
+# Intezy - Make It Easy
 
 ![Intezy Logo](Intezy-1.png)
 
