@@ -9,6 +9,7 @@
 
 
 
+
 Intezy is a collaborative web application designed to help users practice mock interviews using cutting-edge AI technology. It integrates the power of OpenAI's GPT-3.5 Turbo model for natural language processing, providing a seamless and interactive experience.
 
 ## Table of Contents
