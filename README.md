@@ -1,6 +1,6 @@
 # Intezy - Mock Interview Web Application
 
-![Intezy Logo](url-to-logo)
+![Intezy Logo]([url-to-logo](https://github.com/sheikmohameddashleem/MindMesh/blob/main/Intezy-1.png))
 
 Intezy is a collaborative web application designed to help users practice mock interviews using cutting-edge AI technology. It integrates the power of OpenAI's GPT-3.5 Turbo model for natural language processing, providing a seamless and interactive experience.
 
