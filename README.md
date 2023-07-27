@@ -4,7 +4,7 @@
 
 
 <!-- Reduced image size with specified height -->
-<img src="![Intezy Logo](logo.png)" alt="Intezy Logo" height="100">
+<img src="Intezy-1.png" alt="Intezy Logo" height="100">
 
 
 
