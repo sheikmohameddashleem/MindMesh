@@ -15,10 +15,10 @@ public class ChatRequest {
 	
 	private double temperature;
 
-    public ChatRequest(String model, String prompt) {
+    public ChatRequest(String model, List<Message> prompt) {
         this.model = model;
-        this.messages = new ArrayList<>();
-        this.messages.add(new Message("user", prompt));
+//        this.messages = new ArrayList<>();
+        this.messages=prompt;
     }
 
 	public ChatRequest() {
