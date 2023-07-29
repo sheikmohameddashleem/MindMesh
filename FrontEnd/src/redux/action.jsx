@@ -18,13 +18,13 @@ export async function startInterview(courseName) {
 
 // Function to make the API call for submitting an answer
 export async function submitAnswer(answer, count) {
-
-    if (count >= 1) {
-        baseURL += `/end`
-        console.log("inside count baseurl", baseURL)
+    let answerBaseUrl = baseURL
+    if (count >= 9) {
+        answerBaseUrl += `/end`
+        console.log("inside count baseurl", answerBaseUrl)
     }
     try {
-        const response = await axios.post(`${baseURL}`, answer);
+        const response = await axios.post(`${answerBaseUrl}`, answer);
         return response;
     } catch (error) {
         console.error('Error submitting answer:', error);

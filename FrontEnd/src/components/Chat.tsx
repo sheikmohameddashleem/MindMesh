@@ -112,16 +112,10 @@ const [submitCalls , setSubmitCall] = useState(0)
      /// Checking if there is score available in the response.data
 
     if (response.data.hasOwnProperty('score')) {
-      console.log("yes ended" , "response.data.hasOwnProperty('score')", response.data.hasOwnProperty('score'))
+      console.log("yes ended", "response.data.hasOwnProperty('score')", response.data.hasOwnProperty('score'))
+      console.log("score is", response.data.score)
+      localStorage.setItem("score", JSON.stringify(response.data.score))
        setInterviewDone(true)
-    //    const timer = setInterval(() => {
-    //     navigate('/')
-    //   }, 5000);
-
-    // return () => {
-    //   clearInterval(timer);
-    // };
-      
     }
   })
   .catch((error) => {
@@ -171,7 +165,7 @@ const [submitCalls , setSubmitCall] = useState(0)
         </div>
       </div>
       {interviewDone ? <div style={{ display:"flex" ,justifyContent:"center", alignItems:"center"}} onClick={() => {
-        navigate("/")
+        navigate("/score")
       }}>
         <div id="toast-success" className="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
     <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
