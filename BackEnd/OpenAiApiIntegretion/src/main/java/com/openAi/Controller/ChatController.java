@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,8 +21,11 @@ import com.openAi.DTO.ChatRequest;
 import com.openAi.DTO.ChatResponse;
 import com.openAi.DTO.Message;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
-@Async
+@Slf4j
+@CrossOrigin
 public class ChatController {
 
 	@Qualifier("openaiRestTemplate")
@@ -33,13 +38,14 @@ public class ChatController {
 	@Value("${openai.api.url}")
 	private String apiUrl;
 
-	private List<Message> conversationHistory = new ArrayList<>();
+	private int i;
+	private List<Message> conversationHistory;
 
-	private List<Message> normalConversation=new ArrayList<>();
-	
+	private List<Message> normalConversation = new ArrayList<>();
+
 	@GetMapping("/chat")
 	public String chatBot(@RequestBody Body body) {
-		
+
 		Message userMessage = new Message("user", body.getPrompt());
 
 		normalConversation.add(userMessage);
@@ -60,24 +66,26 @@ public class ChatController {
 
 		return aiResponse;
 	}
-	
-	@GetMapping("/start")
-	public String chat(@RequestParam String sub) {
 
+	@GetMapping("/interview/{sub}")
+	public String chat(@PathVariable String sub) {
+
+		conversationHistory = new ArrayList<>();
 		String subject = "";
 
 		if (sub.equals("Java")) {
 			subject += "Java, CoreJava, My sql , Hibernate , Jdbc , Jpa , OOPs , Spring , Spring Boot, Spring Framework ,Restful";
+			i = 1;
 		} else if (sub.equals("Node.Js")) {
-            subject+="Node.js Basics, Core Modules and NPM, Express.js, RESTful APIs and HTTP, Database Integration, Authentication and Security";
-            		
+			subject += "Node.js Basics, Core Modules and NPM, Express.js, RESTful APIs and HTTP, Database Integration, Authentication and Security";
+
 		} else if (sub.equals("Mern")) {
-            subject+="ReactJS Basics,Component Lifecycle,State and Props,React Router,Handling Forms in React,Working with APIs and AJAX,Redux State Management,React Hooks,Higher-Order Components (HOC),Context API,Error Boundaries,React Testing Library,Code Splitting in React,Server-Side Rendering (SSR),React Performance Optimization\r\n"
-            		+ "";
+			subject += "ReactJS Basics,Component Lifecycle,State and Props,React Router,Handling Forms in React,Working with APIs and AJAX,Redux State Management,React Hooks,Higher-Order Components (HOC),Context API,Error Boundaries,React Testing Library,Code Splitting in React,Server-Side Rendering (SSR),React Performance Optimization\r\n"
+					+ "";
 		}
 
-		String prompt = "Act as an interviewer and Greet and ask me exactly one question from the below topics."
-				+ subject;
+		String prompt = "Act as an interviewer and ask me exactly one question from the below topics." + subject
+				+ "And give the Question in Json Format {message:\"your Response\"}";
 		Message userMessage = new Message("user", prompt);
 
 		conversationHistory.add(userMessage);
@@ -99,39 +107,94 @@ public class ChatController {
 		return aiResponse;
 	}
 
-	@PostMapping("/submit")
+	@PostMapping("/interview")
 	public String submit(@RequestBody Body body) {
 
-		String prompt = "This is the Answer For the Previous Question " + body.getPrompt()
-				+ " Please Provide Feed back On scale of 10 for Subject Matter Experitise and Communication "
-				+ "Ask the Next Question";
+		if (conversationHistory.size() <= 20) {
+			i++;
+			if (i == 9) {
 
-		Message userMessage = new Message("user", prompt);
+				String prompt = "This is the Answer For the Previous Question " + body.getPrompt()
+						+ "Ask the Next Question(Algorithimic problem) on Arrays or String or Stack or Queue"
+						+ "give the Question in Json Format {message:\"your Response\"}";
 
-		conversationHistory.add(userMessage);
+				Message userMessage = new Message("user", prompt);
 
-		ChatRequest chatRequest = new ChatRequest(model, conversationHistory);
+				conversationHistory.add(userMessage);
 
-		ChatResponse response = restTemplate.postForObject(apiUrl, chatRequest, ChatResponse.class);
+				ChatRequest chatRequest = new ChatRequest(model, conversationHistory);
 
-		if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-			return "No response";
+				ChatResponse response = restTemplate.postForObject(apiUrl, chatRequest, ChatResponse.class);
+
+				if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
+					return "No response";
+				}
+
+				String aiResponse = response.getChoices().get(0).getMessage().getContent();
+
+				Message aiMessage = new Message("assistant", aiResponse);
+
+				conversationHistory.add(aiMessage);
+
+				return aiResponse;
+			} else {
+				String prompt = "This is the Answer For the Previous Question " + body.getPrompt()
+						+ "Ask the Next Question" + "give the Question in Json Format {message:\"your Response\"}";
+
+				Message userMessage = new Message("user", prompt);
+
+				conversationHistory.add(userMessage);
+
+				ChatRequest chatRequest = new ChatRequest(model, conversationHistory);
+
+				ChatResponse response = restTemplate.postForObject(apiUrl, chatRequest, ChatResponse.class);
+
+				if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
+					return "No response";
+				}
+
+				String aiResponse = response.getChoices().get(0).getMessage().getContent();
+
+				Message aiMessage = new Message("assistant", aiResponse);
+
+				conversationHistory.add(aiMessage);
+
+				return aiResponse;
+			}
+
+		} else {
+			String prompt = "End this Interview And Provide Feedback From the Previous Response based on Communication, Problem Solving, Technical Knowledge, Algorithmic Knowledge, Data Structure Proficiency, Coding Ability, Analytical Thinking, Time and Space Complexity Analysis, Error Handling and Edge Cases. In a Scale of 1 to 10 (1 being the lowest and 10 being the highest), please provide your assessment for each category.\n\n"
+				    + "Example JSON Response Format: {\"message\": \"Thanks For Attending the Interview\", \"score\": {\"communication\": score, \"problem_solving\": score, \"technical_knowledge\": score, \"algorithmic_knowledge\": score, \"data_structure_proficiency\": score, \"coding_ability\": score, \"analytical_thinking\": score, \"time_space_complexity\": score, \"error_handling_edge_cases\": score}}";
+
+			Message userMessage = new Message("user", prompt);
+
+			conversationHistory.add(userMessage);
+
+			ChatRequest chatRequest = new ChatRequest(model, conversationHistory);
+
+			ChatResponse response = restTemplate.postForObject(apiUrl, chatRequest, ChatResponse.class);
+
+			if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
+				return "No response";
+			}
+
+			String aiResponse = response.getChoices().get(0).getMessage().getContent();
+
+			Message aiMessage = new Message("assistant", aiResponse);
+
+			conversationHistory.add(aiMessage);
+
+			return aiResponse;
 		}
-
-		String aiResponse = response.getChoices().get(0).getMessage().getContent();
-
-		Message aiMessage = new Message("assistant", aiResponse);
-
-		conversationHistory.add(aiMessage);
-
-		return aiResponse;
 
 	}
 
 	@GetMapping("/End")
 	public String end() {
 
-		String prompt = "Lets End this Interview And Provide Average Scores Based On The Previous scores scored interms of Subject Matter Experise And Communication";
+		String prompt = "End this Interview And Provide Feedback From the Previous Response based on Communication, Problem Solving, Technical Knowledge, Algorithmic Knowledge, Data Structure Proficiency, Coding Ability, Analytical Thinking, Time and Space Complexity Analysis, Error Handling and Edge Cases. In a Scale of 1 to 10 (1 being the lowest and 10 being the highest), please provide your assessment for each category.\n\n"
+			    + "Example JSON Response Format: {\"message\": \"Thanks For Attending the Interview\", \"score\": {\"communication\": score, \"problem_solving\": score, \"technical_knowledge\": score, \"algorithmic_knowledge\": score, \"data_structure_proficiency\": score, \"coding_ability\": score, \"analytical_thinking\": score, \"time_space_complexity\": score, \"error_handling_edge_cases\": score}}";
+
 		Message userMessage = new Message("user", prompt);
 
 		conversationHistory.add(userMessage);
@@ -152,7 +215,5 @@ public class ChatController {
 
 		return aiResponse;
 	}
-	
-	
 
 }
