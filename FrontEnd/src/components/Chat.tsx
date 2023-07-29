@@ -1,7 +1,15 @@
 import { useState ,useRef, useEffect} from "react";
 import {startInterview, submitAnswer} from "../redux/action"
 import { useNavigate } from 'react-router-dom';
-const Chat = (props) => {
+
+
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any; // You can use a more specific type if available
+  }
+}
+
+const Chat = (props : any) => {
   const navigate = useNavigate();
   const [interviewDone , setInterviewDone] = useState(false)
 const [submitCalls , setSubmitCall] = useState(0)
@@ -14,13 +22,13 @@ const [submitCalls , setSubmitCall] = useState(0)
 
   useEffect(() => {
     startInterview(courseName)
-  .then((response) => {
+  .then((response :any) => {
     console.log('Response:', response.data.message);
     setMessages((prev)=>[...prev, {"time" : new Date().getTime(),
       "creator": "ai",
       "message" :response.data.message + "?"}])
   })
-  .catch((error) => {
+  .catch((error :any) => {
     console.error('Error:', error);
   });
   },[])
@@ -28,9 +36,9 @@ const [submitCalls , setSubmitCall] = useState(0)
     const el = useRef(null);
 
   useEffect(() => {
-    el.current.scrollIntoView( 
-      { block: "start", behavior: "smooth" }
-    );
+    if (el.current) {
+    (el.current as HTMLElement).scrollIntoView({ block: "start", behavior: "smooth" });
+  }
   }, [messages])
 
   const [isListening, setIsListening] = useState(false);
@@ -40,7 +48,7 @@ const [submitCalls , setSubmitCall] = useState(0)
   const recognitionRef = useRef(null);
 
   const handleStartListening = () => {
-    const recognition = recognitionRef.current || new window.webkitSpeechRecognition(); // For Chrome
+    const recognition : any = recognitionRef.current || new window.webkitSpeechRecognition(); // For Chrome
     // const recognition = recognitionRef.current || new window.SpeechRecognition(); // For other browsers
 
     recognition.continuous = true;
@@ -51,7 +59,7 @@ const [submitCalls , setSubmitCall] = useState(0)
       setRecognizedText('');
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event:any) => {
       let transcript = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const { transcript: result } = event.results[i][0];
@@ -62,7 +70,7 @@ const [submitCalls , setSubmitCall] = useState(0)
       setConversation(prevConversation => prevConversation + transcript);
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event :any) => {
       console.error('Error occurred in recognition: ', event.error);
       setIsListening(false);
     };
@@ -78,10 +86,11 @@ const [submitCalls , setSubmitCall] = useState(0)
     recognitionRef.current = recognition;
   };
 
-  const handleStopListening = (text) => {
+  const handleStopListening = (text : string) => {
     if (isListening) {
       const recognition = recognitionRef.current;
       if (recognition) {
+        //@ts-ignore
           recognition.stop();
       }
       }
@@ -100,7 +109,7 @@ const [submitCalls , setSubmitCall] = useState(0)
 
     console.log("submitCalls count" , submitCalls)
   submitAnswer(answer ,submitCalls)
-  .then((response) => {
+  .then((response : any) => {
     console.log('Response after submit:', response.data);
    
       setMessages((prev)=>[...prev, {"time" : new Date().getTime(),
@@ -118,7 +127,7 @@ const [submitCalls , setSubmitCall] = useState(0)
        setInterviewDone(true)
     }
   })
-  .catch((error) => {
+  .catch((error:any) => {
     console.error('Error:', error);
   });
       console.log("conversation", messages)
