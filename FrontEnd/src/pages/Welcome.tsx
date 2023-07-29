@@ -12,6 +12,7 @@ const Welcome: React.FC = () => {
   const imageStyle = {
     maxWidth: '15%'
   };
+
     
   return (
     <div>

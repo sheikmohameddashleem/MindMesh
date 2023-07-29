@@ -30,7 +30,6 @@ export const ScoreBox = () => {
   }, []);
 
   const { communication, problem_solving, technical_knowledge } = score;
-  console.log(technical_knowledge);
   /*
   {
 		"communication": 7,
