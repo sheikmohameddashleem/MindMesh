@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +20,7 @@ import com.openAi.DTO.ChatResponse;
 import com.openAi.DTO.Message;
 
 @RestController
+@Async
 public class ChatController {
 
 	@Qualifier("openaiRestTemplate")
@@ -34,6 +35,32 @@ public class ChatController {
 
 	private List<Message> conversationHistory = new ArrayList<>();
 
+	private List<Message> normalConversation=new ArrayList<>();
+	
+	@GetMapping("/chat")
+	public String chatBot(@RequestBody Body body) {
+		
+		Message userMessage = new Message("user", body.getPrompt());
+
+		normalConversation.add(userMessage);
+
+		ChatRequest chatRequest = new ChatRequest(model, normalConversation);
+
+		ChatResponse response = restTemplate.postForObject(apiUrl, chatRequest, ChatResponse.class);
+
+		if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
+			return "No response";
+		}
+
+		String aiResponse = response.getChoices().get(0).getMessage().getContent();
+
+		Message aiMessage = new Message("assistant", aiResponse);
+
+		normalConversation.add(aiMessage);
+
+		return aiResponse;
+	}
+	
 	@GetMapping("/start")
 	public String chat(@RequestParam String sub) {
 
@@ -125,5 +152,7 @@ public class ChatController {
 
 		return aiResponse;
 	}
+	
+	
 
 }
