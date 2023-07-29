@@ -10,7 +10,7 @@ const MainRoutes: React.FC = () => {
     return (
         <Routes>
             {/* Define a Route for each path */}
-            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/" element={<Welcome />} />
              <Route path="/interview/:course" element={<Interview />} />
         </Routes>
     );
