@@ -6,13 +6,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,9 +21,9 @@ import com.openAi.DTO.Message;
 
 import lombok.extern.slf4j.Slf4j;
 
+@CrossOrigin(origins = "*")
 @RestController
 @Slf4j
-@CrossOrigin
 public class ChatController {
 
 	@Qualifier("openaiRestTemplate")
@@ -73,13 +71,13 @@ public class ChatController {
 		conversationHistory = new ArrayList<>();
 		String subject = "";
 
-		if (sub.equals("Java")) {
+		if (sub.equals("java")) {
 			subject += "Java, CoreJava, My sql , Hibernate , Jdbc , Jpa , OOPs , Spring , Spring Boot, Spring Framework ,Restful";
 			i = 1;
-		} else if (sub.equals("Node.Js")) {
+		} else if (sub.equals("nodejs")) {
 			subject += "Node.js Basics, Core Modules and NPM, Express.js, RESTful APIs and HTTP, Database Integration, Authentication and Security";
 
-		} else if (sub.equals("Mern")) {
+		} else if (sub.equals("mern")) {
 			subject += "ReactJS Basics,Component Lifecycle,State and Props,React Router,Handling Forms in React,Working with APIs and AJAX,Redux State Management,React Hooks,Higher-Order Components (HOC),Context API,Error Boundaries,React Testing Library,Code Splitting in React,Server-Side Rendering (SSR),React Performance Optimization\r\n"
 					+ "";
 		}
